@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Legal Docx Uploader V.7</title>
+  <title>Legal Docx Uploader V.6 - TestV1</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -131,7 +131,7 @@
 </head>
 
 <body>
-  <h1>Legal Docx Uploader V.7</h1>
+  <h1>Legal Docx Uploader V.6 - TestV1</h1>
   <div class="token-container" id="tokenContainer">
     <input id="tokenInput" type="password" placeholder="Nhập GitHub Personal Access Token">
     <button id="saveTokenBtn" onclick="saveToken()">Lưu Token</button>
@@ -268,7 +268,7 @@
         return;
       }
 
-      uploadTime = new Date(); // Lưu thời gian upload
+      uploadTime = new Date();
       statusEl.textContent = `Đang upload ${validFiles.length} file...`;
       try {
         for (let i = 0; i < validFiles.length; i++) {
@@ -279,7 +279,7 @@
           await new Promise((resolve) => {
             reader.onload = async function (e) {
               const content = e.target.result.split(',')[1];
-              console.log(`Uploading ${fileName}...`);
+              console.log(`Uploading ${fileName} to ${REPO}/legal_docs...`);
               const response = await fetch(`https://api.github.com/repos/${REPO}/contents/legal_docs/${fileName}`, {
                 method: "PUT",
                 headers: {
@@ -305,7 +305,7 @@
           });
         }
         statusEl.textContent = `Đã upload ${uploadedCount} file. Đang chờ xử lý...`;
-        startCountdown(); // Bắt đầu đếm ngược 60 giây
+        startCountdown();
         checkWorkflowStatus();
       } catch (error) {
         console.error("Upload error:", error.message);
@@ -316,7 +316,7 @@
     async function checkWorkflowStatus() {
       const statusEl = document.getElementById("status");
       try {
-        console.log("Checking workflow status...");
+        console.log(`Checking workflow status for ${REPO}...`);
         const response = await fetch(`https://api.github.com/repos/${REPO}/actions/runs`, {
           headers: {
             "Authorization": `Bearer ${GITHUB_TOKEN}`,
@@ -330,7 +330,7 @@
         const data = await response.json();
         console.log("Workflow runs:", data.workflow_runs.map(run => ({ name: run.name, created_at: run.created_at })));
         const latestRun = data.workflow_runs
-          .filter(run => run.name === "Process Docx Files") // Thay bằng tên đúng nếu cần
+          .filter(run => run.name === "Process Docx Files")
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
         if (latestRun) {
           console.log("Latest run:", latestRun);
@@ -357,7 +357,7 @@
     async function downloadResult() {
       const statusEl = document.getElementById("status");
       try {
-        console.log("Downloading training_data.txt...");
+        console.log(`Downloading training_data.txt from ${REPO}...`);
         const response = await fetch(`https://api.github.com/repos/${REPO}/contents/training_data.txt?cache_bust=${Date.now()}`, {
           headers: {
             "Authorization": `Bearer ${GITHUB_TOKEN}`,
@@ -369,6 +369,7 @@
           throw new Error(`Không tải được training_data.txt: ${errorData.message || response.statusText}`);
         }
         const data = await response.json();
+        console.log("File SHA:", data.sha);
         if (data.sha === lastSha) {
           statusEl.textContent = "File training_data.txt chưa được cập nhật. Đang thử lại...";
           setTimeout(downloadResult, 10000);
@@ -376,7 +377,7 @@
         }
         lastSha = data.sha;
         const content = decodeURIComponent(escape(atob(data.content)));
-        console.log("Nội dung sau khi giải mã:", content);
+        console.log("Nội dung sau khi giải mã:", content.substring(0, 100));
         const BOM = '\uFEFF';
         const blob = new Blob([BOM + content], { type: "text/plain;charset=utf-8" });
         const url = window.URL.createObjectURL(blob);
