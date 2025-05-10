@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Legal Docx Uploader V.6</title>
+  <title>Legal Docx Uploader V.7</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -131,7 +131,7 @@
 </head>
 
 <body>
-  <h1>Legal Docx Uploader V.6</h1>
+  <h1>Legal Docx Uploader V.7</h1>
   <div class="token-container" id="tokenContainer">
     <input id="tokenInput" type="password" placeholder="Nhập GitHub Personal Access Token">
     <button id="saveTokenBtn" onclick="saveToken()">Lưu Token</button>
@@ -154,7 +154,7 @@
   <button id="downloadBtn" onclick="downloadResult()" disabled>Download training_data.txt</button>
 
   <script>
-    const REPO = "raydoanhuy/docx-cleaner";
+    const REPO = "raydoanhuy/docx-cleaner-testV1";
     let GITHUB_TOKEN = sessionStorage.getItem("github_token") || "";
     let uploadedCount = 0;
     let selectedFiles = [];
